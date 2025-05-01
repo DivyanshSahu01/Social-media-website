@@ -15,10 +15,6 @@ use App\Http\Controllers\PostController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::prefix('post')->middleware('auth:sanctum')->group(function(){
     Route::post('/create', [PostController::class, 'create']);
 });
