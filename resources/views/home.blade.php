@@ -1,6 +1,6 @@
-@extends('main')
+@extends('includes/main')
 @section('content')
-   <div class="row">
+   <div class="row" id="app">
       <div class="col-lg-8 row m-0 p-0">
          <div class="col-sm-12">
             <div id="post-modal-data" class="card card-block">
@@ -12,26 +12,26 @@
                <div class="card-body">
                   <div class="d-flex align-items-center">
                      <div class="user-img">
-                        <img src="../assets/images/user/1.jpg" alt="userimg" class="avatar-60 rounded-circle">
+                        <img src="{{Auth::user()->image}}" alt="userimg" class="avatar-60 rounded-circle">
                      </div>
-                     <form class="post-text ms-3 w-100 "  data-bs-toggle="modal" data-bs-target="#post-modal" action="javascript:void();">
+                     <form class="post-text ms-3 w-100 " data-bs-toggle="modal" data-bs-target="#post-modal" action="javascript:void();">
                         <input type="text" class="form-control rounded" placeholder="Write something here..." style="border:none;">
                      </form>
                   </div>
                   <hr>
                   <ul class=" post-opt-block d-flex list-inline m-0 p-0 flex-wrap">
                      <li class="me-3 mb-md-0 mb-2">
-                        <a href="#" class="btn btn-soft-primary">
+                        <a href="#" class="btn btn-soft-primary" data-bs-toggle="modal" data-bs-target="#post-modal">
                            <img src="../assets/images/small/07.png" alt="icon" class="img-fluid me-2"> Photo/Video
                         </a>
                      </li>
                      <li class="me-3 mb-md-0 mb-2">
-                        <a href="#" class="btn btn-soft-primary">
+                        <a href="#" class="btn btn-soft-primary" data-bs-toggle="modal" data-bs-target="#post-modal">
                            <img src="../assets/images/small/08.png" alt="icon" class="img-fluid me-2"> Tag Friend
                         </a>
                      </li>
                      <li class="me-3">
-                        <a href="#" class="btn btn-soft-primary">
+                        <a href="#" class="btn btn-soft-primary" data-bs-toggle="modal" data-bs-target="#post-modal">
                            <img src="../assets/images/small/09.png" alt="icon" class="img-fluid me-2"> Feeling/Activity
                         </a>
                      </li>
@@ -63,19 +63,26 @@
                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="ri-close-fill"></i></button>
                         </div>
                         <div class="modal-body">
-                           <form class="post-text ms-3 w-100" @submit.prevent="createPost()">
-                              <div class="d-flex align-items-center">
-                                 <div class="user-img">
-                                    <img src="../assets/images/user/1.jpg" alt="userimg" class="avatar-60 rounded-circle img-fluid">
+                           <form class="post-text ms-3 w-100" @submit.prevent="createPost()" id="postForm" novalidate>
+                              <div class="d-flex align-items-center justify-content-between">
+                                 <div class="d-flex align-items-center">
+                                    <div class="user-img">
+                                       <img src="{{Auth::user()->image}}" alt="userimg" class="avatar-60 rounded-circle img-fluid">
+                                    </div>
+                                    <div>
+                                       <input type="text" class="form-control rounded" v-model="postForm.text" placeholder="Write something here..." style="border:none;" required>
+                                    </div>
                                  </div>
-                                 <div>
-                                    <input type="text" class="form-control rounded" v-model="postForm.text" placeholder="Write something here..." style="border:none;">
+                                 <div v-if="selectedImage != ''" class="me-3" style="postion:relative;">
+                                    <i class="fas fa-times-circle text-danger" aria-hidden="true" style="position:absolute;top:15px;right:15px;cursor:pointer;" @click="removeImage()"></i>
+                                    <img :src="selectedImage" width="100" height="100">
                                  </div>
                               </div>
                               <hr>
                               <ul class="d-flex flex-wrap align-items-center list-inline m-0 p-0">
                                  <li class="col-md-6 mb-3">
-                                    <div class="bg-soft-primary rounded p-2 pointer me-3"><a href="#"></a><img src="../assets/images/small/07.png" alt="icon" class="img-fluid"> Photo/Video</div>
+                                    <div class="bg-soft-primary rounded p-2 pointer me-3" onclick="$('#postImage').click();"><a href="#"></a><img src="../assets/images/small/07.png" alt="icon" class="img-fluid"> Photo/Video</div>
+                                    <input type="file" accept=".png, .jpg, .jpeg" style="display:none;" @change="postImageChange()" id="postImage">
                                  </li>
                                  <li class="col-md-6 mb-3">
                                     <div class="bg-soft-primary rounded p-2 pointer me-3"><a href="#"></a><img src="../assets/images/small/08.png" alt="icon" class="img-fluid"> Tag Friend</div>
@@ -107,62 +114,32 @@
                </div>
             </div>
          </div>
-         <div class="col-sm-12">
+         <div class="col-sm-12" v-for="post in posts">
             <div class="card card-block">
                <div class="card-body">
                   <div class="user-post-data">
                      <div class="d-flex justify-content-between">
                         <div class="me-3">
-                           <img class="rounded-circle img-fluid" src="../assets/images/user/01.jpg" alt="">
+                           <img class="avatar-60 rounded-circle img-fluid" :src="post.user.image">
                         </div>
                         <div class="w-100">
                            <div class="d-flex justify-content-between">
                               <div class="">
-                                 <h5 class="mb-0 d-inline-block">Anna Sthesia</h5>
-                                 <span class="mb-0 d-inline-block">Add New Post</span>
-                                 <p class="mb-0 text-primary">Just Now</p>
+                                 <h5 class="mb-0 d-inline-block">@{{post.user.name}}</h5>
+                                 <p class="mb-0 text-primary">@{{post.created_date}} - @{{post.created_time}}</p>
                               </div>
                               <div class="card-post-toolbar">
                                  <div class="dropdown">
-                                    <span class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
+                                    <span class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button" v-if="post.user.id == {{Auth::user()->id}}">
                                     <i class="ri-more-fill"></i>
                                     </span>
                                     <div class="dropdown-menu m-0 p-0">
-                                       <a class="dropdown-item p-3" href="#">
-                                          <div class="d-flex align-items-top">
-                                             <div class="h4">
-                                                <i class="ri-save-line"></i>
-                                             </div>
-                                             <div class="data ms-2">
-                                                <h6>Save Post</h6>
-                                                <p class="mb-0">Add this to your saved items</p>
-                                             </div>
-                                          </div>
-                                       </a>
-                                       <a class="dropdown-item p-3" href="#">
+                                       <a class="dropdown-item p-3" href="javascript:void(0)" @click="deletePost(post.id)">
                                           <div class="d-flex align-items-top">
                                              <i class="ri-close-circle-line h4"></i>
                                              <div class="data ms-2">
-                                                <h6>Hide Post</h6>
-                                                <p class="mb-0">See fewer posts like this.</p>
-                                             </div>
-                                          </div>
-                                       </a>
-                                       <a class="dropdown-item p-3" href="#">
-                                          <div class="d-flex align-items-top">
-                                             <i class="ri-user-unfollow-line h4"></i>
-                                             <div class="data ms-2">
-                                                <h6>Unfollow User</h6>
-                                                <p class="mb-0">Stop seeing posts but stay friends.</p>
-                                             </div>
-                                          </div>
-                                       </a>
-                                       <a class="dropdown-item p-3" href="#">
-                                          <div class="d-flex align-items-top">
-                                             <i class="ri-notification-line h4"></i>
-                                             <div class="data ms-2">
-                                                <h6>Notifications</h6>
-                                                <p class="mb-0">Turn on notifications for this post</p>
+                                                <h6>Delete Post</h6>
+                                                <p class="mb-0">Delete your post.</p>
                                              </div>
                                           </div>
                                        </a>
@@ -174,20 +151,10 @@
                      </div>
                   </div>
                   <div class="mt-3">
-                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nulla dolor, ornare at commodo non, feugiat non nisi. Phasellus faucibus mollis pharetra. Proin blandit ac massa sed rhoncus</p>
+                     <p>@{{post.text}}</p>
                   </div>
-                  <div class="user-post">
-                     <div class=" d-grid grid-rows-2 grid-flow-col gap-3">
-                        <div class="row-span-2 row-span-md-1">
-                           <img src="../assets/images/page-img/p2.jpg" alt="post-image" class="img-fluid rounded w-100">
-                        </div>
-                        <div class="row-span-1">
-                           <img src="../assets/images/page-img/p1.jpg" alt="post-image" class="img-fluid rounded w-100">
-                        </div>
-                        <div class="row-span-1 ">
-                           <img src="../assets/images/page-img/p3.jpg" alt="post-image" class="img-fluid rounded w-100">
-                        </div>
-                     </div>
+                  <div class="user-post" v-if="post.image != null">
+                     <img :src="post.image" alt="post-image" class="img-fluid rounded w-100">
                   </div>
                   <div class="comment-area mt-3">
                      <div class="d-flex justify-content-between align-items-center flex-wrap">
@@ -195,33 +162,18 @@
                            <div class="d-flex align-items-center">
                               <div class="like-data">
                                  <div class="dropdown">
-                                    <span class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                    <img src="../assets/images/icon/01.png" class="img-fluid" alt="">
+                                    <span class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button" @click="likePost(post)" v-if="post.user.id != {{Auth::user()->id}}">
+                                       <img src="../assets/images/icon/01.png" class="img-fluid" alt="">
                                     </span>
-                                    <div class="dropdown-menu py-2">
-                                       <a class="ms-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Like"><img src="../assets/images/icon/01.png" class="img-fluid" alt=""></a>
-                                       <a class="me-2" href="#"  data-bs-toggle="tooltip" data-bs-placement="top" title="Love"><img src="../assets/images/icon/02.png" class="img-fluid" alt=""></a>
-                                       <a class="me-2" href="#"  data-bs-toggle="tooltip" data-bs-placement="top" title="Happy"><img src="../assets/images/icon/03.png" class="img-fluid" alt=""></a>
-                                       <a class="me-2" href="#"  data-bs-toggle="tooltip" data-bs-placement="top" title="HaHa"><img src="../assets/images/icon/04.png" class="img-fluid" alt=""></a>
-                                       <a class="me-2" href="#"  data-bs-toggle="tooltip" data-bs-placement="top" title="Think"><img src="../assets/images/icon/05.png" class="img-fluid" alt=""></a>
-                                       <a class="me-2" href="#"  data-bs-toggle="tooltip" data-bs-placement="top" title="Sade" ><img src="../assets/images/icon/06.png" class="img-fluid" alt=""></a>
-                                       <a class="me-2" href="#"  data-bs-toggle="tooltip" data-bs-placement="top" title="Lovely"><img src="../assets/images/icon/07.png" class="img-fluid" alt=""></a>
-                                    </div>
                                  </div>
                               </div>
                               <div class="total-like-block ms-2 me-3">
                                  <div class="dropdown">
-                                    <span class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                    140 Likes
+                                    <span :class="{'text-primary': post.is_liked}" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
+                                    @{{post.likes.length}} Likes
                                     </span>
-                                    <div class="dropdown-menu">
-                                       <a class="dropdown-item" href="#">Max Emum</a>
-                                       <a class="dropdown-item" href="#">Bill Yerds</a>
-                                       <a class="dropdown-item" href="#">Hap E. Birthday</a>
-                                       <a class="dropdown-item" href="#">Tara Misu</a>
-                                       <a class="dropdown-item" href="#">Midge Itz</a>
-                                       <a class="dropdown-item" href="#">Sal Vidge</a>
-                                       <a class="dropdown-item" href="#">Other</a>
+                                    <div class="dropdown-menu" v-if="post.likes.length > 0">
+                                       <a v-for="like in post.likes" class="dropdown-item" href="javascript:void(0);">@{{like.user.name}}</a>
                                     </div>
                                  </div>
                               </div>
@@ -229,55 +181,43 @@
                            <div class="total-comment-block">
                               <div class="dropdown">
                                  <span class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                 20 Comment
+                                 @{{post.comments.length}} Comment
                                  </span>
-                                 <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="#">Max Emum</a>
-                                    <a class="dropdown-item" href="#">Bill Yerds</a>
-                                    <a class="dropdown-item" href="#">Hap E. Birthday</a>
-                                    <a class="dropdown-item" href="#">Tara Misu</a>
-                                    <a class="dropdown-item" href="#">Midge Itz</a>
-                                    <a class="dropdown-item" href="#">Sal Vidge</a>
-                                    <a class="dropdown-item" href="#">Other</a>
-                                 </div>
                               </div>
                            </div>
                         </div>
                         <div class="share-block d-flex align-items-center feather-icon mt-2 mt-md-0">
                            <a href="javascript:void();" data-bs-toggle="offcanvas" data-bs-target="#share-btn" aria-controls="share-btn"><i class="ri-share-line"></i>
-                           <span class="ms-1">99 Share</span></a>                           
+                           <span class="ms-1">Share</span></a>                           
                         </div>
                      </div>
                      <hr>
                      <ul class="post-comments list-inline p-0 m-0">
-                        <li class="mb-2">
-                           <div class="d-flex">
+                        <li v-for="comment in post.comments">
+                           <div class="d-flex mb-2">
                               <div class="user-img">
-                                 <img src="../assets/images/user/02.jpg" alt="userimg" class="avatar-35 rounded-circle img-fluid">
+                                 <img :src="comment.user.image" alt="userimg" class="avatar-35 rounded-circle img-fluid">
                               </div>
                               <div class="comment-data-block ms-3">
-                                 <h6>Monty Carlo</h6>
-                                 <p class="mb-0">Lorem ipsum dolor sit amet</p>
+                                 <h6>@{{comment.user.name}}</h6>
+                                 <p class="mb-0">@{{comment.text}}</p>
                                  <div class="d-flex flex-wrap align-items-center comment-activity">
                                     <a href="javascript:void();">like</a>
-                                    <a href="javascript:void();">reply</a>
+                                    <a href="javascript:void();" @click="replyMode(post, comment.id, comment.user.name)">reply</a>
                                     <a href="javascript:void();">translate</a>
                                     <span> 5 min </span>
                                  </div>
                               </div>
                            </div>
-                        </li>
-                        <li>
-                           <div class="d-flex">
+                           <div class="d-flex mb-2 ms-5" v-for="reply in comment.replies">
                               <div class="user-img">
-                                 <img src="../assets/images/user/03.jpg" alt="userimg" class="avatar-35 rounded-circle img-fluid">
+                                 <img :src="reply.user.image" alt="userimg" class="avatar-35 rounded-circle img-fluid">
                               </div>
                               <div class="comment-data-block ms-3">
-                                 <h6>Paul Molive</h6>
-                                 <p class="mb-0">Lorem ipsum dolor sit amet</p>
+                                 <h6>@{{reply.user.name}}</h6>
+                                 <p class="mb-0">@{{reply.text}}</p>
                                  <div class="d-flex flex-wrap align-items-center comment-activity">
                                     <a href="javascript:void();">like</a>
-                                    <a href="javascript:void();">reply</a>
                                     <a href="javascript:void();">translate</a>
                                     <span> 5 min </span>
                                  </div>
@@ -285,9 +225,10 @@
                            </div>
                         </li>
                      </ul>
-                     <form class="comment-text d-flex align-items-center mt-3" action="javascript:void(0);">
-                        <input type="text" class="form-control rounded" placeholder="Enter Your Comment">
+                     <form class="comment-text d-flex align-items-center mt-3" @submit.prevent="addComment(post)">
+                        <input type="text" v-model="post.commentBox" class="form-control rounded" placeholder="Enter Your Comment" :id="'enterComment_' + post.id">
                         <div class="comment-attagement d-flex">
+                           <a v-if="post.replyMode" @click="cancelReply(post)" href="javascript:void();"><i class="ri-close-circle-line me-3"></i></a>
                            <a href="javascript:void();"><i class="ri-link me-3"></i></a>
                            <a href="javascript:void();"><i class="ri-user-smile-line me-3"></i></a>
                            <a href="javascript:void();"><i class="ri-camera-line me-3"></i></a>
@@ -365,7 +306,7 @@
             </div>
          </div>
       </div>
-      <div class="col-sm-12 text-center">
+      <div class="col-sm-12 text-center" v-if="loading">
          <img src="../assets/images/page-img/page-load-loader.gif" alt="loader" style="height: 100px;">
       </div>
    </div>
@@ -375,28 +316,196 @@
   const app = Vue.createApp({
       data() {
           return {
-            postForm: {}
+            postForm: {},
+            posts: [],
+            loading: false,
+            next_page_url: '',
+            selectedImage: '',
+            errorMsg: '',
+            profile: JSON.parse(localStorage.getItem('profile'))
           }
       },
+      created() {
+        window.addEventListener('scroll', this.onScroll);
+      },
+      beforeDestroy() {
+        window.removeEventListener('scroll', this.onScroll);
+      },
       mounted(){
-      //   this.listStudents();
+        this.listPosts();
       },
       methods: {
-        async createPost() {
+         postImageChange(){
+            const file = document.getElementById("postImage").files[0];
+            if(file.type == 'image/jpeg' || file.type == 'image/png')
+            {
+               this.selectedImage = URL.createObjectURL(file);
+            }
+            else
+            {
+               this.errorMsg = 'Invalid file type, only images allowed';
+            }
+         },
+         onScroll() {
+            if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight - 100) {
+               if(this.next_page_url != null) {
+                  this.listPosts(this.next_page_url);
+               }
+            }
+         },
+         async createPost() {
+          if(!document.getElementById('postForm').checkValidity()) return false;
           url = "api/post/create";
+          let payload = new FormData();
+          payload.append("text", this.postForm.text);
+          let files = document.getElementById("postImage").files;
+          if(files.length > 0)
+          {
+            payload.append("image", files[0]);
+          }
+
+          axios.post(url, payload, config).then(response => {
+            this.postForm = {};
+            document.getElementById("postImage").value = '';
+            $("#post-modal").modal('hide');
+            this.listPosts();
+          });
+        },
+        async listPosts(url = "api/post/list") {
+         if(this.loading) return;
+          this.loading = true;
+          const response = await fetch(url, {
+            method: "GET",
+            headers: {
+               "Authorization": `Bearer ${token}`
+            }
+          });
+          
+          if(response.ok)
+          {
+            const data = await response.json();
+            this.next_page_url = data.next_page_url;
+            if(url == "api/post/list")
+               this.posts = [];
+            this.posts.push(...data.data);
+          }
+          this.loading = false;
+        },
+        async listLikes(post){
+         if(this.loading) return;
+          this.loading = true;
+         url = "api/like/list/" + post.id;
+         const response = await fetch(url, {
+            method: "GET",
+            headers: {
+               "Authorization": `Bearer ${token}`
+            }
+          });
+          
+          if(response.ok)
+          {
+            const data = await response.json();
+            post.likes = data;
+          }
+          this.loading = false;
+        },
+        async likePost(post){
+         if(post.is_liked)
+         {
+            url = "api/like/remove";
+         }
+         else 
+         {
+            url = "api/like/add";
+         }
 
           const response = await fetch(url, {
             method: "POST",
             headers: {
-              "Content-Type":'application/json'
+               "Authorization": `Bearer ${token}`,
+               "Content-Type": "application/json"
             },
-            body: JSON.stringify(this.postForm)
+            body: JSON.stringify({post_id: post.id})
           });
-
+          
           if(response.ok)
           {
-            
+            this.listLikes(post);
+            post.is_liked = !post.is_liked;
           }
+        },
+        async addComment(post){
+         if(post.replyMode)
+            url = "api/comment/reply/" + post.replyingTo;
+         else
+            url = "api/comment/add";
+
+          const response = await fetch(url, {
+            method: "POST",
+            headers: {
+               "Authorization": `Bearer ${token}`,
+               "Content-Type": "application/json"
+            },
+            body: JSON.stringify({post_id: post.id, text: post.commentBox})
+          });
+          
+          if(response.ok)
+          {
+            this.cancelReply(post);
+            this.listComments(post);
+          }
+        },
+        async listComments(post)
+        {
+         url = "api/comment/list/" + post.id;
+
+          const response = await fetch(url, {
+            method: "GET",
+            headers: {
+               "Authorization": `Bearer ${token}`
+            }
+          });
+          
+          if(response.ok)
+          {
+            const data = await response.json();
+            post.comments = data;
+          }
+        },
+        async deletePost(post_id)
+        {
+            url = "api/post/delete/" + post_id;
+
+            const response = await fetch(url, {
+               method: "DELETE",
+               headers: {
+                  "Authorization": `Bearer ${token}`,
+                  "Content-Type":"application/json"
+               }
+            });
+
+            if(response.ok)
+            {
+               this.listPosts();
+            }
+        },
+        removeImage()
+        {
+         document.getElementById('postImage').value = '';
+         this.selectedImage = '';
+        },
+        replyMode(post, comment_id, user_name)
+        {
+         post.replyMode = true;
+         post.replyingTo = comment_id;
+         post.commentBox = '';
+         document.getElementById('enterComment_' + post.id).placeholder = 'Reply to ' + user_name;
+        },
+        cancelReply(post)
+        {
+         post.replyMode = false;
+         post.commentBox = '';
+         document.getElementById('enterComment_' + post.id).placeholder = 'Enter your comment';
         }
       }
   });

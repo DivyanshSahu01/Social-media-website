@@ -1,30 +1,5 @@
-
-
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <title>{{env('APP_NAME')}}</title>
-      
-      <link rel="shortcut icon" href="../assets/images/favicon.ico" />
-      <link rel="stylesheet" href="../assets/css/libs.min.css">
-      <link rel="stylesheet" href="../assets/css/socialv.css?v=4.0.0">
-      <link rel="stylesheet" href="../assets/vendor/@fortawesome/fontawesome-free/css/all.min.css">
-      <link rel="stylesheet" href="../assets/vendor/remixicon/fonts/remixicon.css">
-      <link rel="stylesheet" href="../assets/vendor/vanillajs-datepicker/dist/css/datepicker.min.css">
-      <link rel="stylesheet" href="../assets/vendor/font-awesome-line-awesome/css/all.min.css">
-      <link rel="stylesheet" href="../assets/vendor/line-awesome/dist/line-awesome/css/line-awesome.min.css">
-      
-  </head>
-  <body class=" ">
-    <!-- loader Start -->
-    <div id="loading">
-          <div id="loading-center">
-          </div>
-    </div>
-    <!-- loader END -->
-    
+@extends('includes/root')
+@section('main')
       <div class="wrapper">
     <section class="sign-in-page">
         <div id="container-inside">
@@ -62,21 +37,35 @@
                 </div>
                 <div class="col-md-6 bg-white pt-5 pt-5 pb-lg-0 pb-5">
                     <div class="sign-in-from">
-                        <h1 class="mb-0">Sign Up</h1>
-                        <p>Enter your email address and password to access admin panel.</p>
-                        <form class="mt-4">
-                            <div class="form-group">
-                                <label class="form-label" for="exampleInputEmail1">Your Full Name</label>
-                                <input type="email" class="form-control mb-0" id="exampleInputEmail1" placeholder="Your Full Name">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label" for="exampleInputEmail2">Email address</label>
-                                <input type="email" class="form-control mb-0" id="exampleInputEmail2" placeholder="Enter email">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label" for="exampleInputPassword1">Password</label>
-                                <input type="password" class="form-control mb-0" id="exampleInputPassword1" placeholder="Password">
-                            </div>
+                        <h1 class="mb-0" v-if="!mailSent">Sign Up</h1>
+                        <form class="mt-4" @submit.prevent="signIn()">
+                            <span v-if="!mailSent">
+                                <div class="form-group">
+                                    <label class="form-label" for="exampleInputEmail1">Your Full Name</label>
+                                    <input type="text" class="form-control mb-0" id="exampleInputEmail1" placeholder="Your Full Name" v-model="formData.name">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="exampleInputEmail2">Email address</label>
+                                    <input type="email" class="form-control mb-0" id="exampleInputEmail2" placeholder="Enter email" v-model="formData.email">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="exampleInputPassword1">Password</label>
+                                    <input type="password" class="form-control mb-0" id="exampleInputPassword1" placeholder="Password" v-model="formData.password">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="exampleInputPassword1">Confirm Password</label>
+                                    <input type="password" class="form-control mb-0" id="exampleInputPassword1" placeholder="Confirm Password" v-model="formData.password_confirmation">
+                                </div>
+                            </span>
+                            <span v-if="mailSent">
+                                <img src="../assets/images/login/mail.png" width="80"  alt="">
+                                <h1 class="mt-3 mb-0">Success !</h1>
+                                <p>A email has been send to @{{formData.email}}. Please enter the otp to complete the sign up process.</p>
+                                <div class="form-group">
+                                    <label class="form-label" for="exampleInputPassword1">OTP</label>
+                                    <input type="text" class="form-control mb-0" maxlength="6" id="exampleInputPassword1" placeholder="OTP" v-model="formData.OTP">
+                                </div>
+                            </span>
                             <div class="d-inline-block w-100">
                                 <div class="form-check d-inline-block mt-2 pt-1">
                                     <input type="checkbox" class="form-check-input" id="customCheck1">
@@ -87,9 +76,7 @@
                             <div class="sign-info">
                                 <span class="dark-color d-inline-block line-height-2">Already Have Account ? <a href="/">Log In</a></span>
                                 <ul class="iq-social-media">
-                                    <li><a href="#"><i class="ri-facebook-box-line"></i></a></li>
-                                    <li><a href="#"><i class="ri-twitter-line"></i></a></li>
-                                    <li><a href="#"><i class="ri-instagram-line"></i></a></li>
+                                    <li><a href="/auth/google"><i class="ri-google-line"></i></a></li>
                                 </ul>
                             </div>
                         </form>
@@ -115,6 +102,39 @@
     <script src="../assets/js/app.js"></script>
     <script src="../vendor/vanillajs-datepicker/dist/js/datepicker.min.js"></script>
     <script src="../assets/js/lottie.js"></script>
-    
-  </body>
-</html>
+    <script>
+        const csrf = '{{ csrf_token() }}';
+        const app = Vue.createApp({
+            data() {
+                return {
+                    formData: {},
+                    mailSent: false
+                }
+            },
+            methods: 
+            {
+                async sendMail()
+                {
+                    axios.post('api/mail/register', this.formData).then(response => {
+                        this.mailSent = true;
+                    });
+                },
+                signIn() 
+                {
+                    if(this.mailSent)
+                        this.register();
+                    else
+                        this.sendMail();
+                },
+                async register() 
+                {
+                    axios.post('register', this.formData).then(response => {
+                        window.location.href = response.data.redirect;
+                    });
+                }
+            }
+        });
+
+        app.mount('#app');
+    </script>
+@endsection

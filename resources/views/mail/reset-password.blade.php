@@ -1,0 +1,1 @@
+Hi {{$name}}, click on the link to reset your password {{$link}}

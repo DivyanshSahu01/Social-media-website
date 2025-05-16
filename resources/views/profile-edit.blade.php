@@ -1,0 +1,314 @@
+
+@extends('includes/main')
+@section('content')
+<div class="row" id="app">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="iq-edit-list">
+                    <ul class="iq-edit-profile row nav nav-pills">
+                        <li class="col-md-3 p-0">
+                            <a class="nav-link active" data-bs-toggle="pill" href="#personal-information">
+                                Personal Information
+                            </a>
+                        </li>
+                        <li class="col-md-3 p-0">
+                            <a class="nav-link" data-bs-toggle="pill" href="#chang-pwd">
+                                Change Password
+                            </a>
+                        </li>
+                        <!-- <li class="col-md-3 p-0">
+                            <a class="nav-link" data-bs-toggle="pill" href="#emailandsms">
+                                Email and SMS
+                            </a>
+                        </li>
+                        <li class="col-md-3 p-0">
+                            <a class="nav-link" data-bs-toggle="pill" href="#manage-contact">
+                                Manage Contact
+                            </a>
+                        </li> -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-12">
+        <div class="iq-edit-list-data">
+            <div class="tab-content">
+                <div class="tab-pane fade active show" id="personal-information" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between">
+                            <div class="header-title">
+                                <h4 class="card-title">Personal Information</h4>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <form @submit.prevent="editUser()">
+                                <div class="form-group row align-items-center">
+                                    <div class="col-sm-6">
+                                        <div class="profile-img-edit">
+                                            <img class="profile-pic" src="{{Auth::user()->image}}" alt="profile-pic">
+                                            <div class="p-image">
+                                                <i class="ri-pencil-line upload-button text-white"></i>
+                                                <input class="file-upload" type="file" id="profilePic" accept="image/*"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="fname"  class="form-label">Name:</label>
+                                        <input type="text" class="form-control" id="fname" v-model="userForm.name">
+                                    </div>
+                                </div>
+                                <!-- <div class="row align-items-center">
+                                    <div class="form-group col-sm-6">
+                                        <label for="uname" class="form-label">User Name:</label>
+                                        <input type="text" class="form-control" id="uname">
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="cname" class="form-label">City:</label>
+                                        <input type="text" class="form-control" id="cname">
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label class="form-label d-block">Gender:</label>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio10" value="option1">
+                                            <label class="form-check-label" for="inlineRadio10"> Male</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio11" value="option1">
+                                            <label class="form-check-label" for="inlineRadio11">Female</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="dob" class="form-label">Date Of Birth:</label>
+                                        <input  class="form-control" id="dob" placeholder="1984-01-24">
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label class="form-label">Marital Status:</label>
+                                    <select class="form-select" aria-label="Default select example">
+                                            <option selected="">Single</option>
+                                            <option>Married</option>
+                                            <option>Widowed</option>
+                                            <option>Divorced</option>
+                                            <option>Separated </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label class="form-label">Age:</label>
+                                        <select class="form-select" aria-label="Default select example 2">
+                                        <option>46-62</option>
+                                        <option>63 > </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label class="form-label">Country:</label>
+                                        <select class="form-select" aria-label="Default select example 3">
+                                        <option>Caneda</option>
+                                        <option>Noida</option>
+                                        <option selected="">USA</option>
+                                        <option>India</option>
+                                        <option>Africa</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label class="form-label">State:</label>
+                                        <select class="form-select" aria-label="Default select example 4">
+                                            <option>California</option>
+                                            <option>Florida</option>
+                                            <option selected="">Georgia</option>
+                                            <option>Connecticut</option>
+                                            <option>Louisiana</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-sm-12">
+                                        <label class="form-label">Address:</label>
+                                        <textarea class="form-control" name="address" rows="5" style="line-height: 22px;">
+                                        37 Cardinal Lane
+                                        Petersburg, VA 23803
+                                        United States of America
+                                        Zip Code: 85001
+                                        </textarea>
+                                    </div>
+                                </div> -->
+                                <button type="submit" class="btn btn-primary me-2">Submit</button>
+                                <button type="reset" class="btn bg-soft-danger">Cancel</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="chang-pwd" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between">
+                        <div class="iq-header-title">
+                            <h4 class="card-title">Change Password</h4>
+                        </div>
+                        </div>
+                        <div class="card-body">
+                        <form @submit.prevent="updatePassword()">
+                            <div class="form-group">
+                                <label for="cpass" class="form-label">Current Password:</label>
+                                <!-- <a href="#" class="float-end">Forgot Password</a> -->
+                                <input type="Password" v-model="passwordForm.oldPassword" class="form-control" id="cpass" value="">
+                            </div>
+                            <div class="form-group">
+                                <label for="npass" class="form-label">New Password:</label>
+                                <input type="Password" v-model="passwordForm.newPassword" class="form-control" id="npass" value="">
+                            </div>
+                            <div class="form-group">
+                                <label for="vpass" class="form-label">Verify Password:</label>
+                                <input type="Password" v-model="passwordForm.confirmPassword" class="form-control" id="vpass" value="">
+                            </div>
+                            <button type="submit" class="btn btn-primary me-2">Submit</button>
+                            <button type="reset" class="btn bg-soft-danger">Cancel</button>
+                        </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="tab-pane fade" id="emailandsms" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between">
+                        <div class="header-title">
+                            <h4 class="card-title">Email and SMS</h4>
+                        </div>
+                        </div>
+                        <div class="card-body">
+                        <form>
+                            <div class="form-group row align-items-center">
+                                <label class="col-md-3" for="emailnotification">Email Notification:</label>
+                                <div class="col-md-9 form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked11" checked>
+                                    <label class="form-check-label" for="flexSwitchCheckChecked11">Checked switch checkbox input</label>
+                                </div>
+                            </div>
+                            <div class="form-group row align-items-center">
+                                <label class="col-md-3" for="smsnotification">SMS Notification:</label>
+                                <div class="col-md-9 form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked12" checked>
+                                    <label class="form-check-label" for="flexSwitchCheckChecked12">Checked switch checkbox input</label>
+                                </div>
+                            </div>
+                            <div class="form-group row align-items-center">
+                                <label class="col-md-3" for="npass">When To Email</label>
+                                <div class="col-md-9">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault12">
+                                        <label class="form-check-label" for="flexCheckDefault12">
+                                            You have new notifications.
+                                        </label>
+                                    </div>
+                                    <div class="form-check d-block">
+                                        <input class="form-check-input" type="checkbox" value="" id="email02">
+                                        <label class="form-check-label" for="email02">You're sent a direct message</label>
+                                    </div>
+                                    <div class="form-check d-block">
+                                        <input type="checkbox" class="form-check-input" id="email03" checked="">
+                                        <label class="form-check-label" for="email03">Someone adds you as a connection</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row align-items-center">
+                                <label class="col-md-3" for="npass">When To Escalate Emails</label>
+                                <div class="col-md-9">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="email04">
+                                        <label class="form-check-label" for="email04">
+                                            Upon new order.
+                                        </label>
+                                    </div>
+                                    <div class="form-check d-block">
+                                        <input class="form-check-input" type="checkbox" value="" id="email05">
+                                        <label class="form-check-label" for="email05">New membership approval</label>
+                                    </div>
+                                    <div class="form-check d-block">
+                                        <input type="checkbox" class="form-check-input" id="email06" checked="">
+                                        <label class="form-check-label" for="email06">Member registration</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary me-2">Submit</button>
+                            <button type="reset" class="btn bg-soft-danger">Cancle</button>
+                        </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="manage-contact" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between">
+                        <div class="header-title">
+                            <h4 class="card-title">Manage Contact</h4>
+                        </div>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="form-group">
+                                    <label for="cno"  class="form-label">Contact Number:</label>
+                                    <input type="text" class="form-control" id="cno" value="001 2536 123 458">
+                                </div>
+                                <div class="form-group">
+                                    <label for="email"  class="form-label">Email:</label>
+                                    <input type="text" class="form-control" id="email" value="Bnijone@demo.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="url"  class="form-label">Url:</label>
+                                    <input type="text" class="form-control" id="url" value="https://getbootstrap.com">
+                                </div>
+                                <button type="submit" class="btn btn-primary me-2">Submit</button>
+                                <button type="reset" class="btn bg-soft-danger">Cancle</button>
+                            </form>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+@section('scripts')
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                userForm: {
+                    name: "{{Auth::user()->name}}"
+                },
+                passwordForm: {}
+            }
+        },
+        methods: {
+            async editUser() {
+                let payload = new FormData();
+                payload.append('name', this.userForm.name);
+                payload.append('image', document.getElementById('profilePic').files[0])
+
+                const response = await fetch('/api/user/edit', {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: payload
+                });
+
+                if(response.ok) {
+                    window.location.reload();
+                }
+            },
+            async updatePassword(){
+                const response = await fetch('/api/user/updatePassword', {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(this.passwordForm)
+                });
+
+                if(response.ok) {
+                    
+                }
+            }
+        }
+    });
+
+    app.mount("#app");
+</script>
+@endsection

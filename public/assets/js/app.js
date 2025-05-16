@@ -31,6 +31,12 @@ Index Of Script
 
   jQuery(document).ready(function() {
 
+    let forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', () => {
+            form.classList.add('was-validated');
+        });
+    });
     /*---------------------------------------------------------------------
     Tooltip
     -----------------------------------------------------------------------*/
@@ -334,7 +340,7 @@ Index Of Script
                     }
                 }(this)
             }), $(".upload-button").on("click", function() {
-                $(".file-upload").click()
+                // $(".file-upload").click()
             })
         }), $(function() {
             function e(e) {

@@ -1,0 +1,1 @@
+Hi {{$name}}, your OTP to register on {{env('APP_NAME')}} is {{$otp}} valid for 5 minutes
